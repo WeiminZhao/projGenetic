@@ -1,0 +1,2 @@
+# projGenetic
+ Genetic Algorithm MiniProj
