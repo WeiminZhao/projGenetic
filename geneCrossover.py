@@ -125,7 +125,7 @@ def mutation(group):
             individual[s2[1]]=temp
     return group
 
-def evaluation(fitness):
+def evaluation(fitness,population,solutions):
     finded=0
     findedItem=[]
     for i in range(len(fitness)):
@@ -133,18 +133,22 @@ def evaluation(fitness):
             finded+=1
             findedItem.append(i)
             
-    if finded>=92:
-        return True,findedItem
+            if population[i] not in solutions:
+                solutions.append(population[i])
+            
+    if len(solutions)>=92:
+        return True,solutions
     else:
-        return False, findedItem
+        return False, solutions
 
 
 # In[2]:
 
 
 #######main process Here#############
+solutions=[]
 #generate populations
-N = 4*1000 #the population number, must use a multiplication of 4
+N = 4*100 #the population number, must use a multiplication of 4
 population=[]
 
 population = initialization(N)
@@ -153,8 +157,8 @@ fitness=[]
 for i in range(N):
     fitness.append(0)
 plt.hist(fitness)
-plt.show()
 
+solutionCount=[] #this array is for tracking which generation find how many solutions
 round=0
 while True:
     round+=1
@@ -162,20 +166,22 @@ while True:
     #calculate fitness value?
     fitness=calcFitness(population)
     
-    plt.clf()
-    plt.hist(fitness)
-    plt.pause(0.05)
+    #plot and print something
+#     plt.clf()
+#     plt.hist(fitness)
+#     plt.pause(0.05)
     
-    if round % 100 ==0:
-        print(round," ps",fitness," ")
-        #print(population)
+#     if round % 100 ==0:
+#         print(round," ps",fitness," ")
+#         #print(population)
     
     #evaluation
-    evalu,pos=evaluation(fitness)
-    print("fit pop find======> ", len(pos))
+    evalu, solutions=evaluation(fitness, population, solutions)
+    solutionCount.append(len(solutions))#record current solution number
+    print(round, " >>fit pop find======> ", len(solutions))
     if evalu:# if success
-        for val in pos:
-            print(population[val])
+        for solutionNum in range(len(solutions)):
+            print(solutionNum+1," : ",solutions[solutionNum])
         break
 
     #select part of population for crossover
@@ -191,5 +197,14 @@ while True:
     selectedPop.extend(children)
     population=[]
     population=selectedPop
-print(population)
+#print(population)
+plt.ylim([0, 100])
+plt.plot(solutionCount)
+plt.show()
+
+
+# In[ ]:
+
+
+
 
